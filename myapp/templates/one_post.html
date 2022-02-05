@@ -1,0 +1,10 @@
+{% extends 'home_page.html' %}
+{% block content %}
+<body>
+    <img src="{{ post.image.url }}" >
+          <h1>"{{ post.title }}"</h1>
+          <h3>{{ post.short_description}}</h3>
+          <p>{{ post.description}}</p>
+          <p>{{ post.author}}</p>
+</body>
+{% endblock %}

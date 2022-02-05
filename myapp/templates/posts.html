@@ -1,0 +1,53 @@
+
+{% extends 'home_page.html' %}
+{% block content %}
+ <style>
+   hr {
+    border: none; /* Убираем границу */
+    background-color: black; /* Цвет линии */
+    color: black; /* Цвет линии для IE6-7 */
+    height: 1px; /* Толщина линии */
+   }
+
+   .outline {
+       border: 1px solid black;
+       padding: 0 10px;
+   }
+
+   ul{
+       display: flex;
+       gap: 10px;
+   }
+   li {
+       list-style-type: none;
+   }
+ </style>
+<body>
+ {% if post_list %}
+      {% for post in post_list %}
+          <hr>
+          <div class="outline">
+          <img src="{{ post.image.url }}">
+          <h1>"{{ post.title }}"</h1>
+          <h3>{{ post.short_description}}</h3>
+          <p>{{ post.description|truncatechars:300 }}</p>
+          <p>{{ post.author}}</p>
+          <p align="right"><a href="{{post.get_absolute_url}}">Читать дальше</a></p>
+          </div>
+      {% endfor %}
+    {% endif %}
+<nav>
+    <ul>
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            <li>{{ i }}</li>
+            {% else %}
+            <li>
+            <a href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</nav>
+{% endblock %}
