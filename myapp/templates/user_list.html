@@ -1,0 +1,48 @@
+{% extends 'home_page.html' %}
+{% block content %}
+ <style>
+   hr {
+    border: none; /* Убираем границу */
+    background-color: black; /* Цвет линии */
+    color: black; /* Цвет линии для IE6-7 */
+    height: 1px; /* Толщина линии */
+   }
+
+   .outline {
+       border: 1px solid black;
+       padding: 0 10px;
+   }
+
+   ul{
+       display: flex;
+       gap: 10px;
+   }
+   li {
+       list-style-type: none;
+   }
+ </style>
+<body>
+ {% if user_list %}
+      {% for users in user_list %}
+          <hr>
+          <div class="outline">
+          <h3>Пользователь - {{ users.username }}</h3>
+          <p>Email - {{ users.email }}</p>
+          </div>
+      {% endfor %}
+    {% endif %}
+<nav>
+    <ul>
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            <li>{{ i }}</li>
+            {% else %}
+            <li>
+            <a href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</nav>
+{% endblock %}

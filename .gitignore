@@ -1,0 +1,6 @@
+.venv
+db.sqlite3
+.idea/
+__pycache__/
+celerybeat-schedule
+celerybeat.pid

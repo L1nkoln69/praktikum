@@ -1,10 +1,33 @@
 {% extends 'home_page.html' %}
 {% block content %}
+<style>
+   .outline {
+       border: 1px solid black;
+       padding: 0 10px;
+   }
+
+</style>
 <body>
+<div class="outline">
     <img src="{{ post.image.url }}" >
           <h1>"{{ post.title }}"</h1>
           <h3>{{ post.short_description}}</h3>
           <p>{{ post.description}}</p>
-          <p>{{ post.author}}</p>
+          <p>{{ post.author}}</p></div>
+    <h3><a href="{% url 'list_comments' %}">Коментарии</a></h3>
+<nav>
+    <ul>
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            <li>{{ i }}</li>
+            {% else %}
+            <li>
+            <a href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</nav>
 </body>
 {% endblock %}

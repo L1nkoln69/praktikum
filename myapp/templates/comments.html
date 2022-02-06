@@ -1,0 +1,38 @@
+{% extends 'home_page.html' %}
+{% block content %}
+<style>
+   .outline {
+       border: 1px solid black;
+       padding: 0 10px;
+   }
+ hr {
+    border: none; /* Убираем границу */
+    background-color: black; /* Цвет линии */
+    color: black; /* Цвет линии для IE6-7 */
+    height: 1px; /* Толщина линии */
+   }
+
+</style>
+<body>
+{% if comments_list %}
+    {% for comment in comments_list %}
+        <hr>
+        <h3 >{{ comment.user_name }}</h3>
+        <h4 >{{ comment.text_comment }}</h4>
+    {% endfor %}
+{% else %}
+    <p>Нету коментариев</p>
+{% endif %}
+    <h3><a href="{% url 'create_comment' %}?next={{ request.path|urlencode }}">Оставить коментарий </a></h3>
+<nav>
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+            {{ i }}
+            {% else %}
+            <a href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+
+</nav>
+</body>
+{% endblock %}

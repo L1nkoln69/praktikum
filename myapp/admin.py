@@ -1,7 +1,13 @@
 from django.contrib import admin
-from .models import Post, Comment, User
+from .models import Post, Comment
 
-# Register your models here.
-admin.site.register(Post)
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_filter = ('date_publication', 'is_published')
+
+    fields = ['date_publication', 'is_published', 'user', 'description',
+              'short_description', 'title']
+
+
 admin.site.register(Comment)
-admin.site.register(User)

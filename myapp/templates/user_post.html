@@ -1,0 +1,43 @@
+{% extends 'home_page.html' %}
+{% block content %}
+<style>
+   hr {
+    border: none; /* Убираем границу */
+    background-color: black; /* Цвет линии */
+    color: black; /* Цвет линии для IE6-7 */
+    height: 1px; /* Толщина линии */
+   }
+   .outline {
+       border: 1px solid black;
+       padding: 0 10px;
+   }
+ </style>
+<body>
+    <h1>Посты</h1>
+    {% if post_list %}
+    <ul>
+      {% for post in post_list %}
+      <li>
+          <hr>
+          <div class="outline">
+          <img src="{{ post.image.url }}">
+          <h1>"{{ post.title }}"</h1>
+          <h3>{{ post.short_description}}</h3>
+          <p>{{ post.description|truncatechars:300 }}</p>
+          <h3 align="right"><a href="{{post.get_absolute_url}}">Читать дальше</a></h3>
+{#          <h3 align="right"><a href="{% url 'update_user_post' %}">Редактировать</a></h3>#}
+              {% if post.is_published %}
+                  <h3>Опубликовано</h3>
+              {% else %}
+                  <h3>Неопубликовано</h3>
+              {% endif %}
+          </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>Постов еще нету.</p>
+    {% endif %}
+</body>
+{% endblock %}

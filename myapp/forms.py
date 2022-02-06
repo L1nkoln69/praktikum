@@ -1,17 +1,11 @@
 from django import forms
-from .models import Post
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 
-class PostForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = '__all__'
-
-
 class ToAdminForm(forms.Form):
     text = forms.CharField(label='Text', widget=forms.Textarea)
+    email = forms.EmailField(label='Email')
 
 
 class RegistrUserForm(UserCreationForm):
