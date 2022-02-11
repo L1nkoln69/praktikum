@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, FormView, UpdateView
 from .models import Post, Comment
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate, login
 from django.core.mail import send_mail
 from .forms import ToAdminForm, RegistrUserForm
 from django.contrib.auth.views import LoginView
@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
+from .forms import CreatePosts
 
 # def sample_view(request):
 #     html = '<body><h1>Django sample_view</h1><br><p>Отладка sample_view</p></body>'
@@ -49,10 +50,15 @@ class MessageAdmin(SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
 
-class RegistrationUser(CreateView):
+class RegistrationUser(FormView):
     form_class = RegistrUserForm
-    template_name = 'registration.html'
+    template_name = 'password.html'
     success_url = reverse_lazy('posts')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
+        return super(RegistrationUser, self).form_valid(form)
 
 
 class LoginUser(LoginView):
@@ -105,9 +111,14 @@ class CreateComment(CreateView):
     template_name = 'create_comment.html'
 
     def form_valid(self, form):
-        form.save()
+        if self.request.user.is_authenticated:
+            #я здесь закончил
+            Comment.objects.create(user_name=self.request.user.username,
+                                   text_comment=form.cleaned_data['text_comment'])
+            send_mail('New Comment', f'Пользователь ({self.request.user}) создал коментарий',
+                      self.request.user.email,
+                      ['orlov229003@gmail.com'])
         next_ = self.request.POST.get('next', '/')
-        send_mail('MESSAGE', 'add new comment', self.request.user, 'orlav228007@gmail.com', fail_silently=False)
         return HttpResponseRedirect(next_)
 
 
@@ -125,28 +136,31 @@ class PostDetail(DetailView):
     context_object_name = 'post'
 
 
-class CreatePost(CreateView):
-    model = Post
+class CreatePost(FormView):
+    form_class = CreatePosts
     template_name = 'post_form.html'
-    fields = ('title', 'short_description', 'image', 'description', 'is_published')
     success_url = reverse_lazy('posts')
     success_message = 'Post successfully created'
 
     def form_valid(self, form):
-        form.save()
+        Post.objects.create(title=form.cleaned_data['title'],
+                            short_description=form.cleaned_data['short_description'],
+                            image=form.cleaned_data['image'],
+                            description=form.cleaned_data['description'],
+                            is_published=form.cleaned_data['is_published'],
+                            user_id=self.request.user.id)
+        send_mail('New Post', f'Пользователь ({self.request.user}) создал пост',
+                  self.request.user.email,
+                  ['orlov229003@gmail.com'])
         return super().form_valid(form)
 
 
 class UpdateUserPost(SuccessMessageMixin, UpdateView):
     model = Post
-    pk_url_kwarg = 'pk'
+    fields = ["title", "short_description", "image", "description", "is_published"]
     template_name = 'post_form.html'
-    success_url = reverse_lazy('post_detail')
-    success_message = "Post updated"
-
-    def get_object(self, queryset=None):
-        user = self.request
-        return user
+    success_url = reverse_lazy('user_post')
+    success_message = "Profile updated"
 
 
 class UserPost(LoginRequiredMixin, ListView):
@@ -158,11 +172,15 @@ class UserPost(LoginRequiredMixin, ListView):
         return Post.objects.filter(user=self.request.user)
 
 
-class PasswordChangeView(FormView):
-    form_class = PasswordChangeForm
-    success_url = reverse_lazy('home_page')
-    template_name = 'registration/password_change_form.html'
+class UserDetail(DetailView):
+    model = User
+    template_name = 'user_detail.html'
 
     def get_object(self, queryset=None):
-        user = self.request.user
+        user = self.request
         return user
+
+
+def password_change_done(request):
+    logout(request)
+    return redirect('login')

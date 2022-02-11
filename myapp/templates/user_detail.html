@@ -1,0 +1,25 @@
+{% extends 'home_page.html' %}
+{% block content %}
+    <style>
+   hr {
+    border: none; /* Убираем границу */
+    background-color: black; /* Цвет линии */
+    color: black; /* Цвет линии для IE6-7 */
+    height: 1px; /* Толщина линии */
+   }
+   .outline {
+       border: 1px solid black;
+       padding: 0 10px;
+   }
+ </style>
+<body>
+<h1>Name - {{ user.username }}</h1>
+<h1>Email - {{ user.email }}</h1>
+<h1>Посты</h1>
+    <ul>
+        {% for posts in user.post_set.all %}
+            <li><a href="{{ posts.get_absolute_url }}">{{ posts.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+{% endblock %}

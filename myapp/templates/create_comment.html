@@ -4,8 +4,8 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="hidden" name="next" value="{{ request.path }}">
-        <button type="submit">Отправить комментарий</button>
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+        <button type="submit">Создать</button>
         </form>
 </body>
 {% endblock %}

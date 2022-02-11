@@ -18,11 +18,14 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse("post_detail", args=[str(self.id)])
 
+    def get_update_url(self):
+        return reverse('update_user_post', args=[str(self.id)])
+
 
 class Comment(models.Model):
     user_name = models.CharField(max_length=70, default='Anonymous ')
     text_comment = models.TextField()
-    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, blank=True)
+    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, blank=True, default=1)
 
     def __str__(self):
         return f'{self.user_name}'

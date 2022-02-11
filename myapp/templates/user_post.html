@@ -31,6 +31,7 @@
               {% else %}
                   <h3>Неопубликовано</h3>
               {% endif %}
+          <h3><a href="{{post.get_update_url}}">Редактировать</a></h3>
           </div>
       </li>
       {% endfor %}
