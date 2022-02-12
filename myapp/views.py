@@ -52,7 +52,7 @@ class MessageAdmin(SuccessMessageMixin, FormView):
 
 class RegistrationUser(FormView):
     form_class = RegistrUserForm
-    template_name = 'password.html'
+    template_name = 'registration.html'
     success_url = reverse_lazy('posts')
 
     def form_valid(self, form):

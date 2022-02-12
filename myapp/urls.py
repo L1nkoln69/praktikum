@@ -20,28 +20,28 @@ urlpatterns = [
     path('user_post/', UserPost.as_view(), name='user_post'),
 
     path('password_change/',
-         PasswordChangeView.as_view(template_name='password/password_change_form.html'),
+         PasswordChangeView.as_view(template_name='registration/password_change_form.html'),
          name='password_change'),
     path('password_change/done/',
          password_change_done,
          name='password_change_done'),
 
-    path('password_reset/', PasswordResetView.as_view(template_name='password/password_reset_form.html')
-         , name='password_reset'),
-    path('password_reset/done/', PasswordResetDoneView.as_view(template_name='password/password_reset_done.html'),
-         name='password_reset_done'),
-    path('reset/<uidb64>/<token>/',
-         PasswordResetConfirmView.as_view(template_name='password/password_reset_confirm.html'),
-         name='password_reset_confirm'),
-    path('reset/done/', PasswordResetCompleteView.as_view(template_name='password/password_reset_complete.html')
-         , name='password_reset_complete'),
+    # path('password_reset/', PasswordResetView.as_view(template_name='registration/password_reset_form.html')
+    #      , name='password_reset'),
+    # path('password_reset/done/', PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'),
+    #      name='password_reset_done'),
+    # path('reset/<uidb64>/<token>/',
+    #      PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'),
+    #      name='password_reset_confirm'),
+    # path('reset/done/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html')
+    #      , name='password_reset_complete'),
 
     path('list_comments/', ListComments.as_view(), name='list_comments'),
     path('create_comment/', CreateComment.as_view(), name='create_comment'),
 
     path('message_admin/', MessageAdmin.as_view(), name='message_admin'),
 
-    path('password/', RegistrationUser.as_view(), name='registr'),
+    path('registration/', RegistrationUser.as_view(), name='registr'),
     path('login/', LoginUser.as_view(), name='login'),
     path('logout/', logout_user, name='logout'),
 ]
