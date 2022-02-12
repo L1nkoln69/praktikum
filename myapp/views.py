@@ -99,7 +99,7 @@ class ListUser(ListView):
     model = User
     template_name = 'user_list.html'
     context_object_name = 'user_list'
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
         return User.objects.prefetch_related('post_set')
@@ -112,12 +112,19 @@ class CreateComment(CreateView):
 
     def form_valid(self, form):
         if self.request.user.is_authenticated:
-            #я здесь закончил
             Comment.objects.create(user_name=self.request.user.username,
                                    text_comment=form.cleaned_data['text_comment'])
-            send_mail('New Comment', f'Пользователь ({self.request.user}) создал коментарий',
-                      self.request.user.email,
+            # отправляет админу письмо
+            send_mail('New Comment', f'Пользователь ({self.request.user.username}) создал коментарий ',
+                      'django@coment.com',
                       ['orlov229003@gmail.com'])
+
+            send_mail('New Comment', f'({self.request.user.username})добавил/ла новый коментарий',
+                      'django@coment.com',
+                      [self.request.user.email])
+        else:
+            Comment.objects.create(user_name=form.cleaned_data["user_name"],
+                                   text_comment=form.cleaned_data['text_comment'])
         next_ = self.request.POST.get('next', '/')
         return HttpResponseRedirect(next_)
 
