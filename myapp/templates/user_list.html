@@ -29,14 +29,11 @@
           <h1>Пользователь - {{ users.username}}</h1>
           <p>Email - {{ users.email }}</p>
           <h1>Посты</h1>
-          <h4>
-
-          </h4>
-        <ul>
-            {% for posts in users.post_set.all %}
-                <li><a href="{{ posts.get_absolute_url }}">{{ posts.title }}</a></li>
-            {% endfor %}
-        </ul>
+    <ul>
+        {% for posts in users.post_set.all %}
+            <li><a href="{{ posts.get_absolute_url }}">{{ posts.title }}</a></li>
+        {% endfor %}
+    </ul>
           </div>
       {% endfor %}
     {% endif %}

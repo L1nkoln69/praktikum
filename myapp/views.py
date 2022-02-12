@@ -3,11 +3,11 @@ from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, FormView, UpdateView
 from .models import Post, Comment
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import logout, login
 from django.core.mail import send_mail
 from .forms import ToAdminForm, RegistrUserForm
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -99,7 +99,7 @@ class ListUser(ListView):
     model = User
     template_name = 'user_list.html'
     context_object_name = 'user_list'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         return User.objects.prefetch_related('post_set')
@@ -112,10 +112,11 @@ class CreateComment(CreateView):
 
     def form_valid(self, form):
         if self.request.user.is_authenticated:
-            Comment.objects.create(user_name=self.request.user.username,
-                                   text_comment=form.cleaned_data['text_comment'])
+            comment = form.save(commit=False)
+            comment.post = Post.objects.get(pk=self.kwargs['pk'])
+            comment.save()
             # отправляет админу письмо
-            send_mail('New Comment', f'Пользователь ({self.request.user.username}) создал коментарий ',
+            send_mail('New Comment', f'Пользователь ({self.request.user.username}) создал коментари',
                       'django@coment.com',
                       ['orlov229003@gmail.com'])
 
@@ -125,6 +126,10 @@ class CreateComment(CreateView):
         else:
             Comment.objects.create(user_name=form.cleaned_data["user_name"],
                                    text_comment=form.cleaned_data['text_comment'])
+
+            send_mail('New Comment', f'({form.cleaned_data["user_name"]})добавил/ла новый коментарий',
+                      'django@coment.com',
+                      [self.request.user.email])
         next_ = self.request.POST.get('next', '/')
         return HttpResponseRedirect(next_)
 
@@ -134,6 +139,9 @@ class ListComments(ListView):
     template_name = 'comments.html'
     context_object_name = 'comments_list'
     paginate_by = 10
+
+    def get_queryset(self):
+        return Comment.objects.filter(is_published=True)
 
 
 class PostDetail(DetailView):

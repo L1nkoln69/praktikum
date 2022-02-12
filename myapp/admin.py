@@ -10,4 +10,8 @@ class PostAdmin(admin.ModelAdmin):
               'short_description', 'title']
 
 
-admin.site.register(Comment)
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_filter = ('is_published',)
+
+    fields = ['user_name', 'post', 'is_published']

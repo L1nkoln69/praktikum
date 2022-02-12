@@ -26,6 +26,7 @@ class Comment(models.Model):
     user_name = models.CharField(max_length=70, default='Anonymous ')
     text_comment = models.TextField()
     post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, blank=True, default=1)
+    is_published = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user_name}'

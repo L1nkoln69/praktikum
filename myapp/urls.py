@@ -2,8 +2,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
 from .views import *
-from django.contrib.auth.views import PasswordChangeView, PasswordResetView,\
-    PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
+from django.contrib.auth.views import PasswordChangeView
 
 urlpatterns = [
     path('home/', Home.as_view(), name='home_page'),
@@ -37,7 +36,7 @@ urlpatterns = [
     #      , name='password_reset_complete'),
 
     path('list_comments/', ListComments.as_view(), name='list_comments'),
-    path('create_comment/', CreateComment.as_view(), name='create_comment'),
+    path('create_comment/<pk>', CreateComment.as_view(), name='create_comment'),
 
     path('message_admin/', MessageAdmin.as_view(), name='message_admin'),
 
