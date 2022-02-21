@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-# from django.urls import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, FormView, UpdateView
 from .models import Post, Comment
@@ -13,6 +13,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from .forms import CreatePosts
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 # def sample_view(request):
 #     html = '<body><h1>Django sample_view</h1><br><p>Отладка sample_view</p></body>'
@@ -33,21 +35,44 @@ class Home(TemplateView):
     template_name = 'home_page.html'
 
 
-class MessageAdmin(SuccessMessageMixin, FormView):
-    template_name = 'message_admin.html'
-    form_class = ToAdminForm
-    success_url = reverse_lazy('home_page')
-    success_message = 'Your message has been sent'
-
-    def form_valid(self, form):
-        data = form.cleaned_data
-        send_mail('MESSAGE',
-                  data["text"],
-                  data['email'],
-                  ['orlav228007@gmail.com'],
-                  fail_silently=False
-                  )
-        return super().form_valid(form)
+def message_admin_form(request):
+    data = dict()
+    if request.method == 'POST':
+        form = ToAdminForm(request.POST)
+        if form.is_valid():
+            send_mail('MESSAGE',
+                      data["text"],
+                      data['email'],
+                      ['orlav228007@gmail.com'],
+                      fail_silently=False
+                      )
+            data['form_is_valid'] = True
+        else:
+            data['form_is_valid'] = False
+    else:
+        email = request.user.email if request.user.is_authenticated else ''
+        form = ToAdminForm(initial={'email': email})
+    context = {'form': form}
+    data['html_form'] = render_to_string('message_admin.html', context, request=request)
+    return JsonResponse(data)
+#
+#
+# class MessageAdmin(SuccessMessageMixin, FormView):
+#     template_name = 'message_admin.html'
+#     form_class = ToAdminForm
+#     success_url = reverse_lazy('home_page')
+#     success_message = 'Your message has been sent'
+#
+#     def form_valid(self, form):
+#         data = form.cleaned_data
+#         send_mail('MESSAGE',
+#                   data["text"],
+#                   data['email'],
+#                   ['orlav228007@gmail.com'],
+#                   fail_silently=False
+#                   )
+#
+#         return super().form_valid(form)
 
 
 class RegistrationUser(FormView):
@@ -110,12 +135,17 @@ class CreateComment(CreateView):
     fields = ('text_comment', 'user_name')
     template_name = 'create_comment.html'
 
+    def get_success_url(self):
+        return reverse('post_detail', kwargs={'pk': self.object.post.pk})
+
     def form_valid(self, form):
         if self.request.user.is_authenticated:
-            comment = form.save(commit=False)
-            comment.post = Post.objects.get(pk=self.kwargs['pk'])
-            comment.save()
-            # отправляет админу письмо
+            Comment.objects.create(user_name=self.request.user.username,
+                                   text_comment=form.cleaned_data['text_comment'],
+                                   )
+            # comment = form.save(commit=False)
+            # comment.post = Post.objects.get(pk=self.kwargs['pk'])
+            # comment.save()
             send_mail('New Comment', f'Пользователь ({self.request.user.username}) создал коментари',
                       'django@coment.com',
                       ['orlov229003@gmail.com'])
@@ -131,12 +161,13 @@ class CreateComment(CreateView):
                       'django@coment.com',
                       [self.request.user.email])
         next_ = self.request.POST.get('next', '/')
-        return HttpResponseRedirect(next_)
+        # return HttpResponseRedirect(next_)
+        return super(CreateComment, self).form_valid(form)
 
 
 class ListComments(ListView):
     model = Comment
-    template_name = 'comments.html'
+    template_name = 'one_post.html'
     context_object_name = 'comments_list'
     paginate_by = 10
 
@@ -148,7 +179,6 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'one_post.html'
     pk_url_kwarg = 'pk'
-    context_object_name = 'post'
 
 
 class CreatePost(FormView):
