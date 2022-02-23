@@ -37,12 +37,13 @@ class Home(TemplateView):
 
 def message_admin_form(request):
     data = dict()
+    form = ToAdminForm(request.POST)
     if request.method == 'POST':
-        form = ToAdminForm(request.POST)
         if form.is_valid():
+            dat = form.cleaned_data
             send_mail('MESSAGE',
-                      data["text"],
-                      data['email'],
+                      dat["text"],
+                      dat['email'],
                       ['orlav228007@gmail.com'],
                       fail_silently=False
                       )

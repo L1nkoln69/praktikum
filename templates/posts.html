@@ -27,13 +27,24 @@
       {% for post in post_list %}
           <hr>
           <div class="outline">
-          <img src="{{ post.image.url }}">
-          <h1>"{{ post.title }}"</h1>
-          <h3>{{ post.short_description}}</h3>
-          <p>{{ post.description|truncatechars:300 }}</p>
-          <p>{{ post.author}}</p>
-          <p align="right"><a href="{{post.get_absolute_url}}">Читать дальше</a></p>
+          <br>
+{#          <img src="{{ post.image.url }}">#}
+{#          <h1>"{{ post.title }}"</h1>#}
+{#          <h3>{{ post.short_description}}</h3>#}
+{#          <p>{{ post.description|truncatechars:300 }}</p>#}
+{#          <p>{{ post.author}}</p>#}
+{#          <p align="right"><a href="{{post.get_absolute_url}}">Читать дальше</a></p>#}
+{#          </div>#}
+          <div class="d-flex position-relative">
+              <img src="{{ post.image.url }}" class="img-thumbnail" alt="...">
+              <div>
+                <h5 class="mt-0">{{ post.title }}</h5>
+                <h5 class="mt-0">{{ post.short_description}}</h5>
+                <p>{{ post.description|truncatechars:300 }}</p>
+                <p>{{ post.author}}</p>
+            <a href="{{post.get_absolute_url}}" class="stretched-link">Читать дальше</a>
           </div>
+</div>
       {% endfor %}
     {% endif %}
 <nav>
