@@ -2,7 +2,6 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
 from .views import *
-from django.contrib.auth.views import PasswordChangeView
 
 urlpatterns = [
     path('home/', Home.as_view(), name='home_page'),

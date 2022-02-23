@@ -1,6 +1,5 @@
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, FormView, UpdateView
 from .models import Post, Comment
 from django.contrib.auth import logout, login
@@ -15,6 +14,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from .forms import CreatePosts
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from .tasks import contact_us
 
 # def sample_view(request):
 #     html = '<body><h1>Django sample_view</h1><br><p>Отладка sample_view</p></body>'
@@ -41,12 +41,7 @@ def message_admin_form(request):
     if request.method == 'POST':
         if form.is_valid():
             dat = form.cleaned_data
-            send_mail('MESSAGE',
-                      dat["text"],
-                      dat['email'],
-                      ['orlav228007@gmail.com'],
-                      fail_silently=False
-                      )
+            contact_us(dat['email'], dat['text'])
             data['form_is_valid'] = True
         else:
             data['form_is_valid'] = False
@@ -161,8 +156,6 @@ class CreateComment(CreateView):
             send_mail('New Comment', f'({form.cleaned_data["user_name"]})добавил/ла новый коментарий',
                       'django@coment.com',
                       [self.request.user.email])
-        next_ = self.request.POST.get('next', '/')
-        # return HttpResponseRedirect(next_)
         return super(CreateComment, self).form_valid(form)
 
 
