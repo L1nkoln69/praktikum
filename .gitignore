@@ -141,3 +141,5 @@ cython_debug/
 
 # staticfiles
 staticfiles/
+
+package-lock.json
